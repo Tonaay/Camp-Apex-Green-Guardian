@@ -98,21 +98,17 @@ public with sharing class GardenService {
                 Decimal healthIndex = garden.CAMPX__Health_Index__c == null ? 0 : garden.CAMPX__Health_Index__c;
                 Decimal minPlantCount = garden.CAMPX__Minimum_Plant_Count__c == null ? 0 : garden.CAMPX__Minimum_Plant_Count__c;
                 Decimal totalPlantCount = garden.CAMPX__Total_Plant_Count__c == null ? 0 : garden.CAMPX__Total_Plant_Count__c;
-
-                if (capacity >= 70 && capacity <= 100 && healthIndex >= 70) {
-                    garden.CAMPX__Status__c = 'Operational';
-                }
-                else if (capacity == 0) {
-                    garden.CAMPX__Status__c = 'Temporary Closure';
-                }
-                else if (capacity >= 100) {
+                
+                if (capacity > 100) {
                     garden.CAMPX__Status__c = 'Over Capacity';
-                }
-                else if (capacity < 70 || healthIndex < 70 || minPlantCount > totalPlantCount) {
+                } if (capacity >= 70 && capacity <= 100 && healthIndex >= 70) {
+                    garden.CAMPX__Status__c = 'Operational';
+                } if ((capacity > 0 && capacity < 70) || healthIndex < 70 || minPlantCount > totalPlantCount) {
                     garden.CAMPX__Status__c = 'Awaiting Resources';
+                } if (capacity == 0) {
+                    garden.CAMPX__Status__c = 'Temporary Closure';
                 }
             }
         }
     }
-
 }
