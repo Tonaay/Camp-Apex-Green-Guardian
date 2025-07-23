@@ -5,11 +5,16 @@ public with sharing class GardenTriggerHandler {
                 GardenDefaultsService.initializeDefaults(newList);
                 GardenService.changeManagerStartDate(newList, NULL);
                 GardenService.calculateCapacity(newList, null);
+                GardenService.calculateHealthIndex(newList, null);
+                GardenService.setGardenStatus(newList, null);
             }
 
             if (Trigger.isUpdate){
                 GardenService.changeManagerStartDate(newList, oldMap);
                 GardenService.calculateCapacity(newList, oldMap);
+                GardenService.calculateHealthIndex(newList, oldMap);
+                GardenService.setGardenStatus(newList, oldMap);
+
             }
         }
 

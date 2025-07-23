@@ -4,6 +4,11 @@ public with sharing class PlantTriggerHandler {
         if(Trigger.isBefore){
             if(Trigger.isInsert){
                 PlantDefaultsService.initializeDefaults(newList);
+                PlantGardenService.validatePlantsWithClosedGardens(newList, null);
+            }
+
+            if(Trigger.isUpdate){
+                PlantGardenService.validatePlantsWithClosedGardens(newList, oldMap);
             }
         }
 

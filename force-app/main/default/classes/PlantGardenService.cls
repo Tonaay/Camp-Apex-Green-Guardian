@@ -109,4 +109,40 @@ public with sharing class PlantGardenService {
         }
     }
 
+    public static void validatePlantsWithClosedGardens(List<CAMPX__Plant__c> plants, Map<Id, CAMPX__Plant__c> oldMap) {
+        Set<Id> gardensToQuery = new Set<Id>();
+        Map<Id, List<CAMPX__Plant__c>> gardenToPlantsMap = new Map<Id, List<CAMPX__Plant__c>>();
+
+        for (CAMPX__Plant__c plant : plants) {
+            Boolean isNew = oldMap == null || !oldMap.containsKey(plant.Id);
+            Boolean isGardenChanged = isNew || plant.CAMPX__Garden__c != oldMap.get(plant.Id).CAMPX__Garden__c;
+
+            if (plant.CAMPX__Garden__c != null && isGardenChanged) {
+                gardensToQuery.add(plant.CAMPX__Garden__c);
+
+                if (!gardenToPlantsMap.containsKey(plant.CAMPX__Garden__c)) {
+                    gardenToPlantsMap.put(plant.CAMPX__Garden__c, new List<CAMPX__Plant__c>());
+                }
+                gardenToPlantsMap.get(plant.CAMPX__Garden__c).add(plant);
+            }
+        }
+
+        if (!gardensToQuery.isEmpty()) {
+            List<CAMPX__Garden__c> closedGardens = [
+                SELECT Id
+                FROM CAMPX__Garden__c
+                WHERE Id IN :gardensToQuery AND CAMPX__Status__c = 'Permanent Closure'
+            ];
+
+            for (CAMPX__Garden__c closedGarden : closedGardens) {
+                List<CAMPX__Plant__c> plantsToFlag = gardenToPlantsMap.get(closedGarden.Id);
+                if (plantsToFlag != null) {
+                    for (CAMPX__Plant__c plant : plantsToFlag) {
+                        plant.addError('The garden selected for this plant is permanently closed. Please select a different garden.');
+                    }
+                }
+            }
+        }
+    }
+
 }
