@@ -8,16 +8,12 @@ private class GardenDefaultServiceTest {
             Name = 'Test Garden'
         );
         
-        // Put into a list to simulate batch insert
         List<CAMPX__Garden__c> gardenList = new List<CAMPX__Garden__c>{ testGarden };
 
-        // Act: Call the default service method manually (as the trigger would during before insert)
         Test.startTest();
         GardenDefaultsService.initializeDefaults(gardenList);
         Test.stopTest();
 
-        // Assert: Check if default values are applied
-        // Adjust these field names and values based on your actual default logic
         System.assertEquals('Awaiting Resources', testGarden.CAMPX__Status__c, 'Expected status to be Awaiting Resources');
         System.assertEquals(100, testGarden.CAMPX__Max_Plant_Count__c, 'Expected default max plant count to be 100');
         System.assertEquals(1, testGarden.CAMPX__Minimum_Plant_Count__c, 'Expected default minimum plant count to be 1');
@@ -39,7 +35,6 @@ private class GardenDefaultServiceTest {
 
         GardenDefaultsService.initializeDefaults(gardenList);
 
-        // Assert that pre-set values are not overridden
         System.assertEquals('Operational', testGarden.CAMPX__Status__c);
         System.assertEquals(200, testGarden.CAMPX__Max_Plant_Count__c);
         System.assertEquals(50, testGarden.CAMPX__Minimum_Plant_Count__c);

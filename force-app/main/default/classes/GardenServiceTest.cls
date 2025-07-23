@@ -3,7 +3,6 @@ public class GardenServiceTest {
 
     @testSetup
     static void setupData() {
-        // Create base garden record used in all tests
         CAMPX__Garden__c garden = new CAMPX__Garden__c(
             Name = 'Test Garden',
             CAMPX__Status__c = '',
@@ -17,7 +16,6 @@ public class GardenServiceTest {
         insert garden;
     }
     
-    // Utility method to create a test User
     private static User createTestUser() {
         Profile p = [SELECT Id FROM Profile WHERE Name='Standard User' LIMIT 1];
         User u = new User(
@@ -61,7 +59,6 @@ public class GardenServiceTest {
         );
         insert garden;
 
-        // Simulate manager change by creating a new garden version
         CAMPX__Garden__c updatedGarden = new CAMPX__Garden__c(
             Id = garden.Id,
             CAMPX__Manager__c = secondUser.Id,
@@ -93,7 +90,6 @@ public class GardenServiceTest {
         );
         insert garden;
 
-        // Simulate manager removal
         CAMPX__Garden__c updatedGarden = new CAMPX__Garden__c(
             Id = garden.Id,
             CAMPX__Manager__c = null
@@ -125,7 +121,6 @@ public class GardenServiceTest {
 
         CAMPX__Garden__c newClone = garden.clone(true);
         
-                // Simulate oldMap where plant count was different
         Map<Id, CAMPX__Garden__c> oldMap = new Map<Id, CAMPX__Garden__c>{
             newClone.Id => newClone.clone(true)
         };
@@ -180,7 +175,7 @@ public class GardenServiceTest {
 
     @isTest
     static void testSetGardenStatusAwaitingResources() {
-        // Step 1: Create the garden with known values
+
         CAMPX__Garden__c garden = new CAMPX__Garden__c(
             Name = 'Awaiting Resources Garden',
             CAMPX__Total_Plant_Count__c = 2,
@@ -193,7 +188,6 @@ public class GardenServiceTest {
         );
         insert garden;
 
-        // Step 2: Update the garden record to trigger a status change
         CAMPX__Garden__c updatedGarden = new CAMPX__Garden__c(
             Id = garden.Id,
             CAMPX__Total_Plant_Count__c = 2, // still below minimum
@@ -216,12 +210,11 @@ public class GardenServiceTest {
 
     @isTest
     static void testSetGardenStatusOperational() {
-        // Get garden and simulate available capacity
+
         CAMPX__Garden__c garden = [SELECT Id, Name, CAMPX__Status__c, CAMPX__Total_Plant_Count__c, CAMPX__Max_Plant_Count__c, 
         CAMPX__Total_Unhealthy_Plant_Count__c, CAMPX__Minimum_Plant_Count__c, CAMPX__Garden__c.CAMPX__Health_Index__c, CAMPX__Capacity__c
         FROM CAMPX__Garden__c LIMIT 1];
 
-        // Simulate oldMap where plant count was different
         Map<Id, CAMPX__Garden__c> oldMap = new Map<Id, CAMPX__Garden__c>{
             garden.Id => garden.clone(true)
         };
@@ -231,7 +224,7 @@ public class GardenServiceTest {
 
         Test.startTest();
         GardenService.setGardenStatus(new List<CAMPX__Garden__c>{garden}, oldMap);
-        // update garden;
+
         Test.stopTest();
         
         System.assertEquals('Operational', garden.CAMPX__Status__c);
@@ -239,7 +232,7 @@ public class GardenServiceTest {
 
     @isTest
     static void testSetGardenStatusTemporaryClosure() {
-        // Get garden and simulate temporary closure condition
+
         CAMPX__Garden__c garden = [SELECT Id, Name, CAMPX__Status__c, CAMPX__Total_Plant_Count__c, CAMPX__Max_Plant_Count__c, 
         CAMPX__Total_Unhealthy_Plant_Count__c, CAMPX__Minimum_Plant_Count__c, CAMPX__Garden__c.CAMPX__Health_Index__c, CAMPX__Capacity__c
         FROM CAMPX__Garden__c LIMIT 1];
@@ -263,7 +256,7 @@ public class GardenServiceTest {
 
     @isTest
     static void testSetGardenStatusPermanentClosure() {
-        // Get garden and simulate available capacity
+
         CAMPX__Garden__c garden = [SELECT Id, Name, CAMPX__Status__c, CAMPX__Total_Plant_Count__c, CAMPX__Max_Plant_Count__c, 
         CAMPX__Total_Unhealthy_Plant_Count__c, CAMPX__Minimum_Plant_Count__c, CAMPX__Garden__c.CAMPX__Health_Index__c, CAMPX__Capacity__c
         FROM CAMPX__Garden__c LIMIT 1];
@@ -286,7 +279,6 @@ public class GardenServiceTest {
         GardenService.setGardenStatus(new List<CAMPX__Garden__c>{garden}, oldMap);
         GardenService.setGardenStatus(new List<CAMPX__Garden__c>{updatedGarden}, oldMapPermanentClosure);
 
-        // update garden;
         Test.stopTest();
         
         System.assertEquals('Permanent Closure', garden.CAMPX__Status__c);

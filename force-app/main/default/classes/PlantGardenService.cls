@@ -134,8 +134,13 @@ public with sharing class PlantGardenService {
                 WHERE Id IN :gardensToQuery AND CAMPX__Status__c = 'Permanent Closure'
             ];
 
+            Set<Id> closedGardenIds = new Set<Id>();
             for (CAMPX__Garden__c closedGarden : closedGardens) {
-                List<CAMPX__Plant__c> plantsToFlag = gardenToPlantsMap.get(closedGarden.Id);
+                closedGardenIds.add(closedGarden.Id);
+            }
+
+            for (Id gardenId : closedGardenIds) {
+                List<CAMPX__Plant__c> plantsToFlag = gardenToPlantsMap.get(gardenId);
                 if (plantsToFlag != null) {
                     for (CAMPX__Plant__c plant : plantsToFlag) {
                         plant.addError('The garden selected for this plant is permanently closed. Please select a different garden.');
